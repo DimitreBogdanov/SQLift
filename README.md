@@ -67,3 +67,78 @@ catch let err as NSError{
      print("Something went wrong: \(err)")
 }
 ```
+
+### Preparing SQL statements
+```swift
+// Where 'values' is an array of type Any to bind to the sql statement and 'sq' is the SQL statement
+// The values in the array will be replaced in order with the question marks in the sql statement
+// Example: select * from table_name where col1 = ? and col2 = ?
+// values = [1, "name"]
+// Supported binding values:
+// - String
+// - Int
+// - Double
+// - nil
+// - bool <=> Will bind 1 if true, 0 otherwise
+
+let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
+```
+
+### Executing a prepared statement for update
+```swift
+db.open()
+let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
+do{
+try ps.executeUpdate()
+}catch DatabaseException.UpdateError(let err){
+    db.rollback()
+    db.close()
+    print("Error while applying database operation: \(err)")
+    return 
+}catch {
+    print("An error has occurred")
+    return
+}
+db.close()
+```
+
+### Executing a prepared statement for select
+```swift
+db.open()
+let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
+let rs = try ps.executeUpdate()
+db.close()
+```
+
+### Retrieving values from a ResultSet
+```swift
+db.open()
+let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
+let rs = try ps.executeUpdate()
+db.close()
+
+// rs.next() will return true as long as there are more rows
+// ResultSet allows you to retrieve column values either using the index or the name of the column
+// The following values are supported:
+// - bool <=> getBool(index:Int32)/getBool(index:String) will return true if the value is greater than 0, false otherwise 
+// - String <=> getString(index:Int32)/getString(index:String)
+// - Int32 <=> getInt(index:Int32)/getString(index:String)
+// - Double <=> getDouble(index:Int32)/getDouble(index:String)
+while rs.next(){
+    let col1 = rs.getString(1)
+    let col2 = rs.getString("col2")
+}
+```
+
+### Getting the type of a column from a RestulSet
+```swift
+// getType(index:Int32)/getType(index:String) <=> will return an int corresponding to the type
+// Types are identified by the following constants:
+// ResultSet.TYPE_INT = 1
+// ResultSet.TYPE_FLOAT = 2
+// ResultSet.TYPE_TEXT = 3
+// ResultSet.TYPE_BLOB = 4
+// ResultSet.TYPE_NIL = 5
+
+let type = rs.getType(1)
+```
