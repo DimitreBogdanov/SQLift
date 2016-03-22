@@ -130,7 +130,7 @@ while rs.next(){
 }
 ```
 
-### Getting the type of a column from a RestulSet
+### Getting the type of a column from a ResultSet
 ```swift
 // getType(index:Int32)/getType(index:String) <=> will return an int corresponding to the type
 // Types are identified by the following constants:
