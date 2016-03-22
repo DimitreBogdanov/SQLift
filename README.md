@@ -114,7 +114,7 @@ db.close()
 ```swift
 db.open()
 let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
-let rs = try ps.executeUpdate()
+let rs:ResultSet = try ps.executeUpdate()
 db.close()
 
 // rs.next() will return true as long as there are more rows
