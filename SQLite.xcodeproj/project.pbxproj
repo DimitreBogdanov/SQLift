@@ -1,0 +1,78 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXFileReference section */
+		67C12B231CA18263003F1814 /* Connection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
+		67C12B241CA1828B003F1814 /* PreparedStatement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreparedStatement.swift; sourceTree = "<group>"; };
+		67C12B271CA182D5003F1814 /* ResultSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultSet.swift; sourceTree = "<group>"; };
+		67C12B281CA182F9003F1814 /* DatabaseException.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseException.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		67C12B1C1CA181E8003F1814 = {
+			isa = PBXGroup;
+			children = (
+				67C12B271CA182D5003F1814 /* ResultSet.swift */,
+				67C12B281CA182F9003F1814 /* DatabaseException.swift */,
+				67C12B231CA18263003F1814 /* Connection.swift */,
+				67C12B241CA1828B003F1814 /* PreparedStatement.swift */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		67C12B1D1CA181E8003F1814 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+			};
+			buildConfigurationList = 67C12B201CA181E8003F1814 /* Build configuration list for PBXProject "SQLite" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 67C12B1C1CA181E8003F1814;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		67C12B211CA181E8003F1814 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		67C12B221CA181E8003F1814 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		67C12B201CA181E8003F1814 /* Build configuration list for PBXProject "SQLite" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				67C12B211CA181E8003F1814 /* Debug */,
+				67C12B221CA181E8003F1814 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 67C12B1D1CA181E8003F1814 /* Project object */;
+}
