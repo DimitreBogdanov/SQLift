@@ -12,11 +12,11 @@ import Foundation
 class ResultSet{
     
     //sqlite3 representation of types
-    static let INT = 1
-    static let FLOAT = 2
-    static let TEXT = 3
-    static let BLOB = 4
-    static let NIL = 5
+    static let TYPE_INT = 1
+    static let TYPE_FLOAT = 2
+    static let TYPE_TEXT = 3
+    static let TYPE_BLOB = 4
+    static let TYPE_NIL = 5
     
     //Reference to the prepared statement pointer
     private var handle:COpaquePointer = nil
