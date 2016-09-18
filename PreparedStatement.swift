@@ -25,7 +25,7 @@ class PreparedStatement{
     //Class initializer
     //Prepares the sql statement with the SQL provided and the database poitner using the v2 C api
     //Should there be an error while preparation, it would be stored in the _.error variable
-    init(sql:String, inout db: COpaquePointer){
+    init(sql:String, db: inout COpaquePointer){
         database = db
         if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK{
             error = (NSString(UTF8String: sqlite3_errmsg(statement)) as! String)
@@ -36,7 +36,7 @@ class PreparedStatement{
     //Prepares the sql statement with the SQL provided and the database poitner using the v2 C api
     //All values passed are automatically bound if the statement preparation does not fail
     //Should there be an error while preparation, it would be stored in the _.error variable
-    init(sql:String, inout db: COpaquePointer, values:[Any]){
+    init(sql:String, db: inout COpaquePointer, values:[Any]){
         database = db
         if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK{
             error = (NSString(UTF8String: sqlite3_errmsg(statement)) as! String)
@@ -46,25 +46,42 @@ class PreparedStatement{
     
     //Loops through the provided parameters and binds them to the prepared statement
     func bindParameters(values:[Any]){
-        for var i = 0;i<values.count;++i{
+        for i in 0 ..< values.count{
             bindParameter((i + 1), value: values[i])
+            if !error.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).isEmpty{
+                return
+            }
         }
     }
-    
     
     //Binds a value at the given index
     //TODO blob, date implementation
     func bindParameter(index:Int32, value:Any?){
         if value == nil{
-            sqlite3_bind_null(statement, index)
+            if sqlite3_bind_null(statement, index) != SQLITE_OK{
+                error = String.fromCString(sqlite3_errmsg(database))!
+                return
+            }
         }else if value is Int{
-            sqlite3_bind_int(statement, index, Int32(value as! Int))
+            if sqlite3_bind_int(statement, index, Int32(value as! Int)) != SQLITE_OK{
+                error = String.fromCString(sqlite3_errmsg(database))!
+                return
+            }
         }else if value is String{
-            sqlite3_bind_text(statement, index, value as! String, -1, SQLITE_TRANSIENT)
+            if sqlite3_bind_text(statement, index, value as! String, -1, SQLITE_TRANSIENT) != SQLITE_OK{
+                error = String.fromCString(sqlite3_errmsg(database))!
+                return
+            }
         }else if value is Double{
-            sqlite3_bind_double(statement, index, value as! Double)
+            if sqlite3_bind_double(statement, index, value as! Double) != SQLITE_OK{
+                error = String.fromCString(sqlite3_errmsg(database))!
+                return
+            }
         }else if value is Bool{
-            sqlite3_bind_int(statement, index, (value as! Bool) ? 1 : 0)
+            if sqlite3_bind_int(statement, index, (value as! Bool) ? 1 : 0) != SQLITE_OK{
+                error = String.fromCString(sqlite3_errmsg(database))!
+                return
+            }
         }else {
             //Doesnt work yet
             //sqlite3_bind_blob(statement, index, value, <#T##n: Int32##Int32#>, <#T##((UnsafeMutablePointer<Void>) -> Void)!##((UnsafeMutablePointer<Void>) -> Void)!##(UnsafeMutablePointer<Void>) -> Void#>)
