@@ -86,20 +86,27 @@ let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
 
 ### Executing a prepared statement for update
 ```swift
-db.open()
+if !db.open(){
+return
+}
 let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
+defer{
+db.close()
+}
 do{
+db.begin()
 try ps.executeUpdate()
 }catch DatabaseException.UpdateError(let err){
     db.rollback()
-    db.close()
     print("Error while applying database operation: \(err)")
-    return 
-}catch {
-    print("An error has occurred")
-    return
 }
-db.close()
+catch let err as NSError{
+    db.rollback()
+    print("Something went wrong: \(err)")
+}
+db.commit()
+//NOTE
+//db.begin(), db.rollback() and db.commit() are optional but if you use a begin, you must use either rollback or commit
 ```
 
 ### Executing a prepared statement for select
@@ -127,6 +134,7 @@ db.close()
 while rs.next(){
     let col1 = rs.getString(1)
     let col2 = rs.getString("col2")
+    ...
 }
 ```
 
