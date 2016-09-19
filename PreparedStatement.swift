@@ -82,6 +82,23 @@ class PreparedStatement{
                 error = String.fromCString(sqlite3_errmsg(database))!
                 return
             }
+        }else if value is NSDate{
+            let date:NSDate = value as! NSDate
+            let calendar = NSCalendar.currentCalendar()
+            let components = calendar.components([.Day , .Month , .Year, .Hour, .Minute], fromDate: date)
+            
+            let year =  components.year
+            let month = components.month
+            let day = components.day
+            let hour = components.hour
+            let minute = components.minute
+            
+            let datetime:String = "\(year)-\(month)-\(day) \(hour):\(minute)"
+            if sqlite3_bind_text(statement, index, datetime, -1, SQLITE_TRANSIENT) != SQLITE_OK{
+                error = String.fromCString(sqlite3_errmsg(database))!
+                print(error)
+                return
+            }
         }else {
             //Doesnt work yet
             //sqlite3_bind_blob(statement, index, value, <#T##n: Int32##Int32#>, <#T##((UnsafeMutablePointer<Void>) -> Void)!##((UnsafeMutablePointer<Void>) -> Void)!##(UnsafeMutablePointer<Void>) -> Void#>)

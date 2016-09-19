@@ -67,6 +67,35 @@ class ResultSet{
         return ((sqlite3_column_int(handle, currentRow[index.lowercaseString]!) > 0) ? true : false)
     }
     
+    //Retrieve an NSDate value using the provided column name
+    //NSDate object has prevision up to the minute
+    func getDate(index:String)->NSDate{
+        let unformattedString = getString(index)
+        let unformattedDateTime:[String] = unformattedString.split(" ")
+        let unformattedDateString:String = unformattedDateTime[0]
+        let unformattedTimeString:String = unformattedDateTime[1]
+        let unformattedDate:[String] = unformattedDateString.split("-")
+        let unformattedTime:[String] = unformattedTimeString.split(":")
+        
+        let year = unformattedDate[0]
+        let month = unformattedDate[1]
+        let day = unformattedDate[2]
+        
+        let hour = unformattedTime[0]
+        let minute = unformattedTime[1]
+        
+        let c:NSDateComponents = NSDateComponents()
+        c.year = Int(year)!
+        c.month = Int(month)!
+        c.day = Int(day)!
+        c.hour = Int(hour)!
+        c.minute = Int(minute)!
+        
+        let newDate = NSCalendar(identifier: NSCalendarIdentifierGregorian)?.dateFromComponents(c)
+        
+        return newDate!
+    }
+    
     //Retrieve the type of the given column name
     func getType(index:String)->Int32{
         return sqlite3_column_type(handle,currentRow[index.lowercaseString]!)
@@ -116,6 +145,36 @@ class ResultSet{
         return ((sqlite3_column_int(handle, index) > 0) ? true : false)
     }
     
+    //Retrieve an NSDate value using the provided column index
+    //NSDate object has prevision up to the minute
+    func getDate(index:Int32)->NSDate{
+        let unformattedString = getString(index)
+        let unformattedDateTime:[String] = unformattedString.split(" ")
+        let unformattedDateString:String = unformattedDateTime[0]
+        let unformattedTimeString:String = unformattedDateTime[1]
+        let unformattedDate:[String] = unformattedDateString.split("-")
+        let unformattedTime:[String] = unformattedTimeString.split(":")
+        
+        let year = unformattedDate[0]
+        let month = unformattedDate[1]
+        let day = unformattedDate[2]
+        
+        let hour = unformattedTime[0]
+        let minute = unformattedTime[1]
+        
+        let c:NSDateComponents = NSDateComponents()
+        c.year = Int(year)!
+        c.month = Int(month)!
+        c.day = Int(day)!
+        c.hour = Int(hour)!
+        c.minute = Int(minute)!
+        
+        let newDate = NSCalendar(identifier: NSCalendarIdentifierGregorian)?.dateFromComponents(c)
+        
+        return newDate!
+    }
+
+    
     //Retrieve the type of the given column name
     func getType(index:Int32)->Int32{
         return sqlite3_column_type(handle,index)
@@ -159,4 +218,11 @@ class ResultSet{
         }
     }
     
+}
+
+extension String{
+    //Split with the given separator
+    func split(separator:Character)->[String]{
+        return self.characters.split{$0 == separator}.map(String.init)
+    }
 }
