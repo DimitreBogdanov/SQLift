@@ -80,6 +80,7 @@ catch let err as NSError{
 // - Double
 // - nil
 // - bool <=> Will bind 1 if true, 0 otherwise
+// - NSDate <=> precision to the minute
 
 let ps:PreparedStatement = db.prepareStatement("sql statement", values: [])
 ```
@@ -131,6 +132,7 @@ db.close()
 // - String <=> getString(index:Int32)/getString(index:String)
 // - Int32 <=> getInt(index:Int32)/getString(index:String)
 // - Double <=> getDouble(index:Int32)/getDouble(index:String)
+// - NSDate <=> getDate(index:Int32)/getDate(index:String)
 while rs.next(){
     let col1 = rs.getString(1)
     let col2 = rs.getString("col2")
