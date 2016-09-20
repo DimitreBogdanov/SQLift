@@ -65,7 +65,7 @@ class Connection{
     //Will return false if it failed to open
     //_.errorMessage class member contains more information on the error
     func open()->Bool{
-        let error = sqlite3_open_v2((filePath?.cStringUsingEncoding(NSUTF8StringEncoding))!, &handle, SQLITE_OPEN_READWRITE, nil)
+        let error = sqlite3_open_v2((filePath?.cStringUsingEncoding(NSUTF8StringEncoding))!, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nil)
         if error != SQLITE_OK{
             self.errorMessage = (NSString(UTF8String: sqlite3_errmsg(handle)) as! String)
             return false
