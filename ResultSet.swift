@@ -68,7 +68,7 @@ class ResultSet{
     }
     
     //Retrieve an NSDate value using the provided column name
-    //NSDate object has prevision up to the minute
+    //NSDate object has prevision up to the second
     func getDate(index:String)->NSDate{
         let unformattedString = getString(index)
         let unformattedDateTime:[String] = unformattedString.split(" ")
@@ -83,6 +83,7 @@ class ResultSet{
         
         let hour = unformattedTime[0]
         let minute = unformattedTime[1]
+        let second = unformattedTime[2]
         
         let c:NSDateComponents = NSDateComponents()
         c.year = Int(year)!
@@ -90,6 +91,7 @@ class ResultSet{
         c.day = Int(day)!
         c.hour = Int(hour)!
         c.minute = Int(minute)!
+        c.second = Int(second)!
         
         let newDate = NSCalendar(identifier: NSCalendarIdentifierGregorian)?.dateFromComponents(c)
         
@@ -146,7 +148,7 @@ class ResultSet{
     }
     
     //Retrieve an NSDate value using the provided column index
-    //NSDate object has prevision up to the minute
+    //NSDate object has prevision up to the second
     func getDate(index:Int32)->NSDate{
         let unformattedString = getString(index)
         let unformattedDateTime:[String] = unformattedString.split(" ")
@@ -161,6 +163,7 @@ class ResultSet{
         
         let hour = unformattedTime[0]
         let minute = unformattedTime[1]
+        let second = unformattedTime[2]
         
         let c:NSDateComponents = NSDateComponents()
         c.year = Int(year)!
@@ -168,6 +171,7 @@ class ResultSet{
         c.day = Int(day)!
         c.hour = Int(hour)!
         c.minute = Int(minute)!
+        c.second = Int(second)!
         
         let newDate = NSCalendar(identifier: NSCalendarIdentifierGregorian)?.dateFromComponents(c)
         
