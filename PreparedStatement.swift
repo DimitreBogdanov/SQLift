@@ -94,7 +94,7 @@ class PreparedStatement{
             let minute = components.minute
             let second = components.second
             
-            let datetime:String = "\(year)-\(month)-\(day) \(hour):\(minute):\(second)"
+            let datetime:String = "\(year)-\(Utility.timeString(month))-\(tility.timeString(day)) \(tility.timeString(hour)):\(tility.timeString(minute)):\(tility.timeString(second))"
             if sqlite3_bind_text(statement, index, datetime, -1, SQLITE_TRANSIENT) != SQLITE_OK{
                 error = String.fromCString(sqlite3_errmsg(database))!
                 print(error)
