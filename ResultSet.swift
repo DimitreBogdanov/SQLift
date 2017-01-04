@@ -17,18 +17,27 @@ class ResultSet{
     static let TYPE_TEXT = 3
     static let TYPE_BLOB = 4
     static let TYPE_NIL = 5
+    static let TYPE_DATE = 6
+    
+    //NSDate precision
+    static let SECOND = 0
+    static let MINUTE = 1
+    static let HOUR = 2
+    static let DAY = 3
+    static let MONTH = 4
+    static let YEAR = 5
     
     //Reference to the prepared statement pointer
-    private var handle:COpaquePointer = nil
+    fileprivate var handle:OpaquePointer? = nil
     //Wether or not the result was sucessful
     var isSuccessful:Bool = false
     //Any errors that would occurr are added to this array
     var errors:[String] = []
     //The current row of the step
-    private var currentRow:[String:Int32] = [:]
+    fileprivate var currentRow:[String:Int32] = [:]
     
     //Class initializer with the reference to the prepared statement pointer
-    init(pointer:COpaquePointer){
+    init(pointer:OpaquePointer?){
         handle = pointer
     }
     
@@ -46,30 +55,31 @@ class ResultSet{
     ///////////////////////////////////////////////////////
     
     //Retrieve an Int value using the provided column name
-    func getInt(index:String)->Int32{
-        return sqlite3_column_int(handle,currentRow[index.lowercaseString]!)
+    func getInt(_ index:String)->Int32{
+        return sqlite3_column_int(handle,currentRow[index.lowercased()]!)
     }
     
     //Retrieve a String value using the provided column name
-    func getString(index:String)->String{
-        return sqlite3_column_text(handle, currentRow[index.lowercaseString]!) == nil ? "" : String.fromCString(UnsafePointer<Int8>(sqlite3_column_text(handle, currentRow[index.lowercaseString]!)))!
+    func getString(_ index:String)->String{
+        return sqlite3_column_text(handle, currentRow[index.lowercased()]!) == nil ? "" : String(cString:(sqlite3_column_text(handle, currentRow[index.lowercased()]!)))
     }
     
     //Retrieve a Double value using the provided column name
-    func getDouble(index:String)->Double{
-        return sqlite3_column_double(handle, currentRow[index.lowercaseString]!)
+    func getDouble(_ index:String)->Double{
+        return sqlite3_column_double(handle, currentRow[index.lowercased()]!)
     }
     
     //Retrieve a Bool value using the provided column name
     //When retrieving, this translates to returning 'true' if the value is greater than 0
     //If the value is 0 or less, it will be treated as a 'false'
-    func getBool(index:String)->Bool{
-        return ((sqlite3_column_int(handle, currentRow[index.lowercaseString]!) > 0) ? true : false)
+    func getBool(_ index:String)->Bool{
+        return ((sqlite3_column_int(handle, currentRow[index.lowercased()]!) > 0) ? true : false)
     }
+    
     
     //Retrieve an NSDate value using the provided column name
     //NSDate object has prevision up to the second
-    func getDate(index:String)->NSDate{
+    func getDate(_ index:String, precision:Int)->Date{
         let unformattedString = getString(index)
         let unformattedDateTime:[String] = unformattedString.split(" ")
         let unformattedDateString:String = unformattedDateTime[0]
@@ -85,27 +95,44 @@ class ResultSet{
         let minute = unformattedTime[1]
         let second = unformattedTime[2]
         
-        let c:NSDateComponents = NSDateComponents()
-        c.year = Int(year)!
-        c.month = Int(month)!
-        c.day = Int(day)!
-        c.hour = Int(hour)!
-        c.minute = Int(minute)!
-        c.second = Int(second)!
+        var c:DateComponents = DateComponents()
+        c.hour = 0
         
-        let newDate = NSCalendar(identifier: NSCalendarIdentifierGregorian)?.dateFromComponents(c)
+        switch precision{
+        case ResultSet.SECOND:
+            c.second = Int(second)!
+            fallthrough
+        case ResultSet.MINUTE:
+            c.minute = Int(minute)!
+            fallthrough
+        case ResultSet.HOUR:
+            c.hour = Int(hour)!
+            fallthrough
+        case ResultSet.DAY:
+            c.day = Int(day)!
+            fallthrough
+        case ResultSet.MONTH:
+            c.month = Int(month)!
+            fallthrough
+        case ResultSet.YEAR:
+            c.year = Int(year)!
+            break
+        default: break
+        }
+        
+        let newDate = Calendar(identifier: Calendar.Identifier.gregorian).date(from: c)
         
         return newDate!
     }
     
     //Retrieve the type of the given column name
-    func getType(index:String)->Int32{
-        return sqlite3_column_type(handle,currentRow[index.lowercaseString]!)
+    func getType(_ index:String)->Int32{
+        return sqlite3_column_type(handle,currentRow[index.lowercased()]!)
     }
     
     //Retrieve the value of a column depending on the column type
-    func getValue(index:String) -> Any?{
-        switch sqlite3_column_type(handle, currentRow[index.lowercaseString]!){
+    func getValue(_ index:String) -> Any?{
+        switch sqlite3_column_type(handle, currentRow[index.lowercased()]!){
         case SQLITE_INTEGER:
             return getInt(index)
         case SQLITE_FLOAT:
@@ -126,30 +153,30 @@ class ResultSet{
     ///////////////////////////////////////////////////////
     
     //Retrieve an Int value using the provided column index
-    func getInt(index:Int32)->Int32{
+    func getInt(_ index:Int32)->Int32{
         return sqlite3_column_int(handle,index)
     }
     
     //Retrieve a String value using the provided column index
-    func getString(index:Int32)->String{
-        return String.fromCString(UnsafePointer<Int8>(sqlite3_column_text(handle, index)))!
+    func getString(_ index:Int32)->String{
+        return String(cString: (sqlite3_column_text(handle, index)))
     }
     
     //Retrieve a Double value using the provided column index
-    func getDouble(index:Int32)->Double{
+    func getDouble(_ index:Int32)->Double{
         return sqlite3_column_double(handle, index)
     }
     
     //Retrieve a Bool value using the provided column index
     //When retrieving, this translates to returning 'true' if the value is greater than 0
     //If the value is 0 or less, it will be treated as a 'false'
-    func getBool(index:Int32)->Bool{
+    func getBool(_ index:Int32)->Bool{
         return ((sqlite3_column_int(handle, index) > 0) ? true : false)
     }
     
     //Retrieve an NSDate value using the provided column index
-    //NSDate object has prevision up to the second
-    func getDate(index:Int32)->NSDate{
+    //NSDate object has prevision up to the minute
+    func getDate(_ index:Int32, precision:Int)->Date{
         let unformattedString = getString(index)
         let unformattedDateTime:[String] = unformattedString.split(" ")
         let unformattedDateString:String = unformattedDateTime[0]
@@ -165,27 +192,42 @@ class ResultSet{
         let minute = unformattedTime[1]
         let second = unformattedTime[2]
         
-        let c:NSDateComponents = NSDateComponents()
-        c.year = Int(year)!
-        c.month = Int(month)!
-        c.day = Int(day)!
-        c.hour = Int(hour)!
-        c.minute = Int(minute)!
-        c.second = Int(second)!
+        var c:DateComponents = DateComponents()
         
-        let newDate = NSCalendar(identifier: NSCalendarIdentifierGregorian)?.dateFromComponents(c)
+        switch precision{
+        case ResultSet.SECOND:
+            c.second = Int(second)!
+            fallthrough
+        case ResultSet.MINUTE:
+            c.minute = Int(minute)!
+            fallthrough
+        case ResultSet.HOUR:
+            c.hour = Int(hour)!
+            fallthrough
+        case ResultSet.DAY:
+            c.day = Int(day)!
+            fallthrough
+        case ResultSet.MONTH:
+            c.month = Int(month)!
+            fallthrough
+        case ResultSet.YEAR:
+            c.year = Int(year)!
+            break
+        default: break
+        }
+        
+        let newDate = Calendar(identifier: Calendar.Identifier.gregorian).date(from: c)
         
         return newDate!
     }
-
     
     //Retrieve the type of the given column name
-    func getType(index:Int32)->Int32{
+    func getType(_ index:Int32)->Int32{
         return sqlite3_column_type(handle,index)
     }
     
     //Retrieve the value of a column depending on the column type
-    func getValue(index:Int32) -> Any?{
+    func getValue(_ index:Int32) -> Any?{
         switch sqlite3_column_type(handle, index){
         case SQLITE_INTEGER:
             return getInt(index)
@@ -208,25 +250,18 @@ class ResultSet{
     }
     
     //Retrieve the name of the column at a given index
-    func getColumnName(index:Int32)->String{
-        return String.fromCString(sqlite3_column_name(handle, index))!
+    func getColumnName(_ index:Int32)->String{
+        return String(cString: sqlite3_column_name(handle, index))
     }
     
     //Retrieve all the column values names from the current row and store them in a dictionary with the associated numeral index
     //This will allow anyone using this framework to retrieve column values either by index or by name
-    private func fetchRow(){
+    fileprivate func fetchRow(){
         let count = sqlite3_column_count(handle)
         currentRow = [:]
         for i in 0...count-1{
-            currentRow[String.fromCString(sqlite3_column_name(handle, i))!.lowercaseString] = i
+            currentRow[String(cString: sqlite3_column_name(handle, i)).lowercased()] = i
         }
     }
     
-}
-
-extension String{
-    //Split with the given separator
-    func split(separator:Character)->[String]{
-        return self.characters.split{$0 == separator}.map(String.init)
-    }
 }

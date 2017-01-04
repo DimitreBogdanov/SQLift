@@ -47,11 +47,11 @@ private let SQLITE_ERRORS:[Int32:String] = [
 class Connection{
     
     //File path of the database
-    private var filePath:String?
+    fileprivate var filePath:String?
     //Pointer to the database object
-    private var handle: COpaquePointer = nil
+    fileprivate var handle: OpaquePointer? = nil
     //Transaction used for savepoints (begin, rollback, commit)
-    private let transaction:String = "GymBuddyTransaction"
+    fileprivate let transaction:String = "GymBuddyTransaction"
     //Will contain the error message if there is one in case of failure of operation
     var errorMessage:String = ""
     
@@ -61,13 +61,18 @@ class Connection{
         self.filePath = filePath
     }
     
+    //Allow for subclassing to adjust the database to be opened if using a singleton object.
+    func setFilePath(_ path:String){
+        self.filePath = path;
+    }
+    
     //Opens the database using the provided file path
     //Will return false if it failed to open
     //_.errorMessage class member contains more information on the error
     func open()->Bool{
-        let error = sqlite3_open_v2((filePath?.cStringUsingEncoding(NSUTF8StringEncoding))!, &handle, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, nil)
+        let error = sqlite3_open_v2((filePath?.cString(using: String.Encoding.utf8))!, &handle, SQLITE_OPEN_READWRITE, nil)
         if error != SQLITE_OK{
-            self.errorMessage = (NSString(UTF8String: sqlite3_errmsg(handle)) as! String)
+            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle)) as! String)
             return false
         }
         errorMessage = ""
@@ -80,7 +85,7 @@ class Connection{
     func close()->Bool{
         let error =  sqlite3_close_v2(handle)
         if error != SQLITE_OK{
-            self.errorMessage = (NSString(UTF8String: sqlite3_errmsg(handle)) as! String)
+            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle)) as! String)
             return false
         }
         errorMessage = ""
@@ -95,7 +100,7 @@ class Connection{
     func begin(){
         do{
             try exec("SAVEPOINT \(transaction)")
-        }catch DatabaseException.ExecutionError(let err){
+        }catch DatabaseException.executionError(let err){
             print("Error opening transaction: \(err)")
         }catch{
             print("An error has occurred when opening the transaction")
@@ -106,7 +111,7 @@ class Connection{
     func commit(){
         do{
             try exec("RELEASE SAVEPOINT \(transaction)")
-        }catch DatabaseException.ExecutionError(let err){
+        }catch DatabaseException.executionError(let err){
             print("Error commiting transaction: \(err)")
         }catch{
             print("An error has occurred when commiting the transaction")
@@ -117,7 +122,7 @@ class Connection{
     func rollback(){
         do{
             try exec("ROLLBACK TRANSACTION TO SAVEPOINT \(transaction)")
-        }catch DatabaseException.ExecutionError(let err){
+        }catch DatabaseException.executionError(let err){
             print("Error rolling back transaction: \(err)")
         }catch{
             print("An error has occurred when rolling back transaction")
@@ -133,10 +138,10 @@ class Connection{
     //}catch DatabaseException.ExecutionError(let error){
     // *error variable now contains the content of the error message*
     //}
-    func exec(statement:String)throws{
+    func exec(_ statement:String)throws{
         if sqlite3_exec(handle, statement, nil, nil, nil) != SQLITE_OK{
-            self.errorMessage = (NSString(UTF8String: sqlite3_errmsg(handle)) as! String)
-            throw DatabaseException.ExecutionError(error: self.errorMessage)
+            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle)) as! String)
+            throw DatabaseException.executionError(error: self.errorMessage)
         }
     }
     
@@ -144,13 +149,13 @@ class Connection{
     //This does not bind any parameters, it simply prepares the statement
     //Binding can either be done through the overloaded prepareStatement(sql:String, values [Any]) function call
     //Or it can be done by using the bindParameter()/bindParameters() functions of the PreparedStatement object
-    func prepareStatement(sql:String)->PreparedStatement{
-        return PreparedStatement(sql: sql, db:&handle)
+    func prepareStatement(_ sql:String)->PreparedStatement{
+        return PreparedStatement(sql: sql, db:&handle!)
     }
     
     //Prepare a statement with the given SQL and values to bind
     //Using this call to prepareStatement() will automatically bind all the values, you do not have to do it yourself
-    func prepareStatement(sql:String, values:[Any])->PreparedStatement{
-        return PreparedStatement(sql: sql, db:&handle, values: values)
+    func prepareStatement(_ sql:String, values:[Any])->PreparedStatement{
+        return PreparedStatement(sql: sql, db:&handle!, values: values)
     }
 }
