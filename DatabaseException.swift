@@ -8,18 +8,18 @@
 
 import Foundation
 
-enum DatabaseException : ErrorType{
+enum DatabaseException : Error{
     //Connection errors
-    case OpeningError(error:String)
-    case ClosingError(error:String)
-    case ExecutionError(error:String)
+    case openingError(error:String)
+    case closingError(error:String)
+    case executionError(error:String)
     
     //PreparedStatement errors
-    case PreparingError(error:String)
-    case ResetError(error:String)
-    case DestroyingError(error:String)
-    case SelectError(error:String)
-    case UpdateError(error:String)
+    case preparingError(error:String)
+    case resetError(error:String)
+    case destroyingError(error:String)
+    case selectError(error:String)
+    case updateError(error:String)
     
     //ResultSet errors
 }

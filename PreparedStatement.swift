@@ -12,23 +12,23 @@ import Foundation
 class PreparedStatement{
     
     //Pointer to the sql statement object used by the database to prepare the SQL
-    private var statement: COpaquePointer = nil
+    fileprivate var statement: OpaquePointer? = nil
     //Reference to the database pointer used for the connection
-    private var database:COpaquePointer = nil
+    fileprivate var database:OpaquePointer? = nil
     //Should there be an error from a failure of operation, it would be stored in this variable
     var error:String = ""
     
     //Used for text binding
-    internal let SQLITE_STATIC = unsafeBitCast(0, sqlite3_destructor_type.self)
-    internal let SQLITE_TRANSIENT = unsafeBitCast(-1, sqlite3_destructor_type.self)
+    internal let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
+    internal let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
     
     //Class initializer
     //Prepares the sql statement with the SQL provided and the database poitner using the v2 C api
     //Should there be an error while preparation, it would be stored in the _.error variable
-    init(sql:String, db: inout COpaquePointer){
+    init(sql:String, db: inout OpaquePointer){
         database = db
         if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK{
-            error = (NSString(UTF8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
         }
     }
     
@@ -36,19 +36,19 @@ class PreparedStatement{
     //Prepares the sql statement with the SQL provided and the database poitner using the v2 C api
     //All values passed are automatically bound if the statement preparation does not fail
     //Should there be an error while preparation, it would be stored in the _.error variable
-    init(sql:String, db: inout COpaquePointer, values:[Any]){
+    init(sql:String, db: inout OpaquePointer, values:[Any]){
         database = db
         if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK{
-            error = (NSString(UTF8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
         }
         bindParameters(values)
     }
     
     //Loops through the provided parameters and binds them to the prepared statement
-    func bindParameters(values:[Any]){
+    func bindParameters(_ values:[Any]){
         for i in 0 ..< values.count{
             bindParameter((i + 1), value: values[i])
-            if !error.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).isEmpty{
+            if error.isValid(){
                 return
             }
         }
@@ -56,47 +56,54 @@ class PreparedStatement{
     
     //Binds a value at the given index
     //TODO blob, date implementation
-    func bindParameter(index:Int32, value:Any?){
+    func bindParameter(_ index:Int32, value:Any?){
         if value == nil{
             if sqlite3_bind_null(statement, index) != SQLITE_OK{
-                error = String.fromCString(sqlite3_errmsg(database))!
+                error = String(cString: sqlite3_errmsg(database))
+                print(error)
                 return
             }
         }else if value is Int{
             if sqlite3_bind_int(statement, index, Int32(value as! Int)) != SQLITE_OK{
-                error = String.fromCString(sqlite3_errmsg(database))!
+                error = String(cString: sqlite3_errmsg(database))
+                print(error)
                 return
             }
         }else if value is String{
             if sqlite3_bind_text(statement, index, value as! String, -1, SQLITE_TRANSIENT) != SQLITE_OK{
-                error = String.fromCString(sqlite3_errmsg(database))!
+                error = String(cString: sqlite3_errmsg(database))
+                print(error)
                 return
             }
         }else if value is Double{
             if sqlite3_bind_double(statement, index, value as! Double) != SQLITE_OK{
-                error = String.fromCString(sqlite3_errmsg(database))!
+                error = String(cString: sqlite3_errmsg(database))
+                print(error)
                 return
             }
         }else if value is Bool{
             if sqlite3_bind_int(statement, index, (value as! Bool) ? 1 : 0) != SQLITE_OK{
-                error = String.fromCString(sqlite3_errmsg(database))!
+                error = String(cString: sqlite3_errmsg(database))
+                print(error)
                 return
             }
         }else if value is NSDate{
-            let date:NSDate = value as! NSDate
-            let calendar = NSCalendar.currentCalendar()
-            let components = calendar.components([.Day , .Month , .Year, .Hour, .Minute, .Second], fromDate: date)
+            let date:Date = value as! Date
+            let calendar = Calendar.current
+            let components = (calendar as NSCalendar).components([.day , .month , .year, .hour, .minute, .second], from: date)
             
             let year =  components.year
             let month = components.month
             let day = components.day
             let hour = components.hour
             let minute = components.minute
-            let second = components.second
+            let seconds = components.second
             
-            let datetime:String = "\(year)-\(month)-\(day) \(hour):\(minute):\(second)"
+            
+            
+            let datetime:String = "\(year!)-\(Utility.timeString(month!))-\(Utility.timeString(day!)) \(Utility.timeString(hour!)):\(Utility.timeString(minute!)):\(Utility.timeString(seconds!))"
             if sqlite3_bind_text(statement, index, datetime, -1, SQLITE_TRANSIENT) != SQLITE_OK{
-                error = String.fromCString(sqlite3_errmsg(database))!
+                error = String(cString: sqlite3_errmsg(database))
                 print(error)
                 return
             }
@@ -112,7 +119,7 @@ class PreparedStatement{
     //_.error would contain any error if it does fail
     func reset()->Bool{
         if sqlite3_reset(statement) != SQLITE_OK{
-            error = (NSString(UTF8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
             return false
         }
         return true
@@ -123,7 +130,7 @@ class PreparedStatement{
     //_.error would contain any error if it does fail
     func destroy()->Bool{
         if sqlite3_finalize(statement) != SQLITE_OK{
-            error = (NSString(UTF8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
             return false
         }
         statement = nil
@@ -134,7 +141,7 @@ class PreparedStatement{
     //Used when expecting results to be returned from the query
     //Returns a ResultSet initialized with the pointer of the PreparedStatement
     func executeSelect()->ResultSet{
-        let result = ResultSet(pointer:statement)
+        let result = ResultSet(pointer:statement!)
         result.isSuccessful = true
         return result
     }
@@ -151,10 +158,10 @@ class PreparedStatement{
     //}
     func executeUpdate()throws{
         if sqlite3_step(statement) != SQLITE_DONE{
-            error = (NSString(UTF8String: sqlite3_errmsg(statement)) as! String)
-            throw DatabaseException.UpdateError(error: error)
+            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
+            throw DatabaseException.updateError(error: error)
         }
-        reset()
-        destroy()
+        _ = reset()
+        _ = destroy()
     }
 }
