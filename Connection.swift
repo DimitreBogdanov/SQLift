@@ -51,7 +51,7 @@ class Connection{
     //Pointer to the database object
     fileprivate var handle: OpaquePointer? = nil
     //Transaction used for savepoints (begin, rollback, commit)
-    fileprivate let transaction:String = "GymBuddyTransaction"
+    fileprivate let transaction:String = "DatabaseTransaction"
     //Will contain the error message if there is one in case of failure of operation
     var errorMessage:String = ""
     
