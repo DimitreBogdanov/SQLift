@@ -1,5 +1,5 @@
-# SQLite
-SQLite is a simple and very basic swift library used as a wrapper for the c/c++ sqlite3 library.
+# SQLift
+SQLift is a simple and very basic swift library used as a wrapper for the c/c++ sqlite3 library.
 This project is still work in progress and only supports basic features.
 
 ### Note: this does not come with sqlite3 itself. Make sure it is included in your swift project otherwise the following code will not work.
