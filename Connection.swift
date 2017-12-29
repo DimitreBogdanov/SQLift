@@ -51,7 +51,7 @@ class Connection{
     //Pointer to the database object
     fileprivate var handle: OpaquePointer? = nil
     //Transaction used for savepoints (begin, rollback, commit)
-    fileprivate let transaction:String = "GymBuddyTransaction"
+    var transactions:Stack<String> = Stack<String>()
     //Will contain the error message if there is one in case of failure of operation
     var errorMessage:String = ""
     
@@ -99,6 +99,8 @@ class Connection{
     //Begin a transaction using savepoint
     func begin(){
         do{
+            let transaction = "`" + UUID().uuidString + "`"
+            transactions.push(item: transaction)
             try exec("SAVEPOINT \(transaction)")
         }catch DatabaseException.executionError(let err){
             print("Error opening transaction: \(err)")
@@ -110,7 +112,7 @@ class Connection{
     //Commit the transaction by releasing the savepoint
     func commit(){
         do{
-            try exec("RELEASE SAVEPOINT \(transaction)")
+            try exec("RELEASE SAVEPOINT \(transactions.pop())")
         }catch DatabaseException.executionError(let err){
             print("Error commiting transaction: \(err)")
         }catch{
@@ -121,7 +123,7 @@ class Connection{
     //Rollback the transaction by rolling back to the savepoint
     func rollback(){
         do{
-            try exec("ROLLBACK TRANSACTION TO SAVEPOINT \(transaction)")
+            try exec("ROLLBACK TRANSACTION TO SAVEPOINT \(transactions.pop())")
         }catch DatabaseException.executionError(let err){
             print("Error rolling back transaction: \(err)")
         }catch{
