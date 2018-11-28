@@ -1,0 +1,16 @@
+PODS:
+  - SQLift (0.1.0)
+
+DEPENDENCIES:
+  - SQLift (from `../`)
+
+EXTERNAL SOURCES:
+  SQLift:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  SQLift: cfe8088a5417dd58108681ea147841e9288ab162
+
+PODFILE CHECKSUM: dbd191d00c8cc1c6aebc8bcd6f2f0ae6abbbd84c
+
+COCOAPODS: 1.5.2

@@ -1,0 +1,6 @@
+use_frameworks!
+target 'SQLift_Tests' do
+  pod 'SQLift', :path => '../'
+  
+  
+end

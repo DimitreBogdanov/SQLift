@@ -1,0 +1,22 @@
+{
+  "name": "SQLift",
+  "version": "0.1.0",
+  "summary": "A short description of SQLift.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/dimitrebogdanov/SQLift",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "dimitrebogdanov": "dimitre_7@hotmail.com"
+  },
+  "source": {
+    "git": "https://github.com/dimitrebogdanov/SQLift.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "SQLift/Classes/**/*"
+}
