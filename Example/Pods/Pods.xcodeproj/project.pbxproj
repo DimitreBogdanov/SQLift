@@ -20,6 +20,8 @@
 		6720930621AE355100B2CC35 /* PreparedStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672092FB21AE355100B2CC35 /* PreparedStatement.swift */; };
 		6720930721AE355100B2CC35 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672092FC21AE355100B2CC35 /* Utility.swift */; };
 		6720930821AE355100B2CC35 /* Utility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 672092FC21AE355100B2CC35 /* Utility.swift */; };
+		6720930A21AE375C00B2CC35 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6720930921AE375C00B2CC35 /* libsqlite3.tbd */; };
+		6720930E21AE3B9F00B2CC35 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6720930D21AE3B9F00B2CC35 /* Extensions.swift */; };
 		9A9927F8E5D5A0CA41A341642E0B294B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A16F4CFC63FAC439D7A04994F579A03 /* Foundation.framework */; };
 		A1B813EF70366EC5099EDCB274EDCB06 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A16F4CFC63FAC439D7A04994F579A03 /* Foundation.framework */; };
 		A9080A35ACB381594BDF3338AA2E0FDC /* Pods-SQLift_Tests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A534F939D8548F77828B27BE178476C7 /* Pods-SQLift_Tests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -55,6 +57,8 @@
 		672092FA21AE355100B2CC35 /* Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Stack.swift; path = SQLift/Classes/Stack.swift; sourceTree = "<group>"; };
 		672092FB21AE355100B2CC35 /* PreparedStatement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PreparedStatement.swift; path = SQLift/Classes/PreparedStatement.swift; sourceTree = "<group>"; };
 		672092FC21AE355100B2CC35 /* Utility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Utility.swift; path = SQLift/Classes/Utility.swift; sourceTree = "<group>"; };
+		6720930921AE375C00B2CC35 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.1.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
+		6720930D21AE3B9F00B2CC35 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Extensions.swift; path = SQLift/Classes/Extensions.swift; sourceTree = "<group>"; };
 		68071D379EB9BB269AFBB7D53C45B199 /* Pods-SQLift_Tests-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SQLift_Tests-frameworks.sh"; sourceTree = "<group>"; };
 		697AD40508B62740461BFA21D15C9F46 /* Pods-SQLift_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SQLift_Tests-dummy.m"; sourceTree = "<group>"; };
 		7ED6B19076EF7F1382170571218EA9FD /* Pods-SQLift_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SQLift_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -82,6 +86,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6720930A21AE375C00B2CC35 /* libsqlite3.tbd in Frameworks */,
 				9A9927F8E5D5A0CA41A341642E0B294B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -100,6 +105,7 @@
 		21E2F819CE37A85330EF9B20021A4FDD /* Pod */ = {
 			isa = PBXGroup;
 			children = (
+				6720930D21AE3B9F00B2CC35 /* Extensions.swift */,
 				672092F821AE355100B2CC35 /* Connection.swift */,
 				672092F721AE355100B2CC35 /* DatabaseException.swift */,
 				672092FB21AE355100B2CC35 /* PreparedStatement.swift */,
@@ -153,6 +159,7 @@
 		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6720930921AE375C00B2CC35 /* libsqlite3.tbd */,
 				5E0D919E635D23B70123790B8308F8EF /* iOS */,
 			);
 			name = Frameworks;
@@ -299,6 +306,7 @@
 				6720930721AE355100B2CC35 /* Utility.swift in Sources */,
 				6720930521AE355100B2CC35 /* PreparedStatement.swift in Sources */,
 				672092FD21AE355100B2CC35 /* DatabaseException.swift in Sources */,
+				6720930E21AE3B9F00B2CC35 /* Extensions.swift in Sources */,
 				6720930321AE355100B2CC35 /* Stack.swift in Sources */,
 				6720930121AE355100B2CC35 /* ResultSet.swift in Sources */,
 				672092FF21AE355100B2CC35 /* Connection.swift in Sources */,

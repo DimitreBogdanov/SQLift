@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SQLite3
 
 //List of many of the possible sqlite errors returned
 //0 being no errors
@@ -72,7 +73,7 @@ class Connection{
     func open()->Bool{
         let error = sqlite3_open_v2((filePath?.cString(using: String.Encoding.utf8))!, &handle, SQLITE_OPEN_READWRITE, nil)
         if error != SQLITE_OK{
-            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle)) as! String)
+            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle))! as String)
             return false
         }
         errorMessage = ""
@@ -83,9 +84,14 @@ class Connection{
     //Will return false if it failed to close
     //_.errorMessage class member contains more information on the error
     func close()->Bool{
-        let error =  sqlite3_close_v2(handle)
+        var error:Int32?
+        if #available(iOS 8.2, *) {
+            error =  sqlite3_close_v2(handle)
+        } else {
+            error = sqlite3_close(handle)
+        }
         if error != SQLITE_OK{
-            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle)) as! String)
+            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle))! as String)
             return false
         }
         errorMessage = ""

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SQLite3
 
 //Class used to prepare SQL statements, usually while binding values
 class PreparedStatement{
@@ -28,7 +29,7 @@ class PreparedStatement{
     init(sql:String, db: inout OpaquePointer){
         database = db
         if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK{
-            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement))! as String)
         }
     }
     
@@ -39,7 +40,7 @@ class PreparedStatement{
     init(sql:String, db: inout OpaquePointer, values:[Any]){
         database = db
         if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK{
-            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement))! as String)
         }
         bindParameters(values)
     }
@@ -47,8 +48,8 @@ class PreparedStatement{
     //Loops through the provided parameters and binds them to the prepared statement
     func bindParameters(_ values:[Any]){
         for i in 0 ..< values.count{
-            bindParameter((i + 1), value: values[i])
-            if error.isValid(){
+            bindParameter(Int32(i.advanced(by: 1)), value: values[i])
+            if error.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty{
                 return
             }
         }
@@ -101,7 +102,7 @@ class PreparedStatement{
             
             
             
-            let datetime:String = "\(year!)-\(timeString(month!))-\(timeString(day!)) \(timeString(hour!)):\(timeString(minute!)):\(timeString(seconds!))"
+            let datetime:String = "\(year!)-\(timeString(unit: month!))-\(timeString(unit: day!)) \(timeString(unit: hour!)):\(timeString(unit: minute!)):\(timeString(unit: seconds!))"
             if sqlite3_bind_text(statement, index, datetime, -1, SQLITE_TRANSIENT) != SQLITE_OK{
                 error = String(cString: sqlite3_errmsg(database))
                 print(error)
@@ -119,7 +120,7 @@ class PreparedStatement{
     //_.error would contain any error if it does fail
     func reset()->Bool{
         if sqlite3_reset(statement) != SQLITE_OK{
-            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement))! as String)
             return false
         }
         return true

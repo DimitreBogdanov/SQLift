@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SQLite3
 
 //Class used as a collection of results returned from the query
 class ResultSet{
@@ -81,19 +82,19 @@ class ResultSet{
     //NSDate object has prevision up to the second
     func getDate(_ index:String, precision:Int)->Date{
         let unformattedString = getString(index)
-        let unformattedDateTime:[String] = unformattedString.split(" ")
-        let unformattedDateString:String = unformattedDateTime[0]
-        let unformattedTimeString:String = unformattedDateTime[1]
-        let unformattedDate:[String] = unformattedDateString.split("-")
-        let unformattedTime:[String] = unformattedTimeString.split(":")
+        let unformattedDateTime = unformattedString.split(separator: " ")
+        let unformattedDateString:String = String(unformattedDateTime[0])
+        let unformattedTimeString:String = String(unformattedDateTime[1])
+        let unformattedDate = unformattedDateString.split(separator: "-")
+        let unformattedTime = unformattedTimeString.split(separator: ":")
         
-        let year = unformattedDate[0]
-        let month = unformattedDate[1]
-        let day = unformattedDate[2]
+        let year = String(unformattedDate[0])
+        let month = String(unformattedDate[1])
+        let day = String(unformattedDate[2])
         
-        let hour = unformattedTime[0]
-        let minute = unformattedTime[1]
-        let second = unformattedTime[2]
+        let hour = String(unformattedTime[0])
+        let minute = String(unformattedTime[1])
+        let second = String(unformattedTime[2])
         
         var c:DateComponents = DateComponents()
         c.hour = 0
@@ -178,19 +179,19 @@ class ResultSet{
     //NSDate object has prevision up to the minute
     func getDate(_ index:Int32, precision:Int)->Date{
         let unformattedString = getString(index)
-        let unformattedDateTime:[String] = unformattedString.split(" ")
-        let unformattedDateString:String = unformattedDateTime[0]
-        let unformattedTimeString:String = unformattedDateTime[1]
-        let unformattedDate:[String] = unformattedDateString.split("-")
-        let unformattedTime:[String] = unformattedTimeString.split(":")
+        let unformattedDateTime = unformattedString.split(separator: " ")
+        let unformattedDateString:String = String(unformattedDateTime[0])
+        let unformattedTimeString:String = String(unformattedDateTime[1])
+        let unformattedDate = unformattedDateString.split(separator: "-")
+        let unformattedTime = unformattedTimeString.split(separator: ":")
         
-        let year = unformattedDate[0]
-        let month = unformattedDate[1]
-        let day = unformattedDate[2]
+        let year = String(unformattedDate[0])
+        let month = String(unformattedDate[1])
+        let day = String(unformattedDate[2])
         
-        let hour = unformattedTime[0]
-        let minute = unformattedTime[1]
-        let second = unformattedTime[2]
+        let hour = String(unformattedTime[0])
+        let minute = String(unformattedTime[1])
+        let second = String(unformattedTime[2])
         
         var c:DateComponents = DateComponents()
         
