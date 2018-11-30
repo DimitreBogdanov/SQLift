@@ -131,7 +131,7 @@ class PreparedStatement{
     //_.error would contain any error if it does fail
     func destroy()->Bool{
         if sqlite3_finalize(statement) != SQLITE_OK{
-            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement))! as String)
             return false
         }
         statement = nil
@@ -159,7 +159,7 @@ class PreparedStatement{
     //}
     func executeUpdate()throws{
         if sqlite3_step(statement) != SQLITE_DONE{
-            error = (NSString(utf8String: sqlite3_errmsg(statement)) as! String)
+            error = (NSString(utf8String: sqlite3_errmsg(statement))! as String)
             throw DatabaseException.updateError(error: error)
         }
         _ = reset()

@@ -148,7 +148,7 @@ class Connection{
     //}
     func exec(_ statement:String)throws{
         if sqlite3_exec(handle, statement, nil, nil, nil) != SQLITE_OK{
-            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle)) as! String)
+            self.errorMessage = (NSString(utf8String: sqlite3_errmsg(handle))! as String)
             throw DatabaseException.executionError(error: self.errorMessage)
         }
     }
